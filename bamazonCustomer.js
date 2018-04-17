@@ -1,6 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
+//connect to local sequel pro
 var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -27,10 +28,12 @@ function afterConnection() {
     for (var i = 0; i < res.length; i++) {
       console.log("ID: " + res[i].id + " || " + "Product: " + res[i].product_name + " || " + "Price: $" + res[i].price);
     }
+    makePurchase();
   });
 }
 
 //Why is inquirer coming up on connection?
+function makePurchase() {
 inquirer
   .prompt([{
       //The first should ask them the ID of the product they would like to buy.
@@ -65,7 +68,7 @@ inquirer
       }
     });
   });
-
+};
 
 //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
 
