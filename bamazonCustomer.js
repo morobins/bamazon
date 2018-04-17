@@ -14,7 +14,7 @@ var connection = mysql.createConnection({
 });
 
 //Show Connection ID
-connection.connect(function(err) {
+connection.connect(function (err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
   afterConnection();
@@ -22,30 +22,60 @@ connection.connect(function(err) {
 
 //Show full inventory once connected
 function afterConnection() {
-  connection.query("SELECT * FROM products", function(err, res) {
+  connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
-    console.log(res);
-    connection.end();
+    for (var i = 0; i < res.length; i++) {
+      console.log("ID: " + res[i].id + " || " + "Product: " + res[i].product_name + " || " + "Price: $" + res[i].price);
+    }
   });
 }
 
-
+//Why is inquirer coming up on connection?
 inquirer
-    .prompt([{
+  .prompt([{
       //The first should ask them the ID of the product they would like to buy.
-        name: 'name',
-        message: 'What product would you like to buy?',
-        type: 'input',
-        default: "Computer"
-      },
-      //message should ask how many units of the product they would like to buy.
-      {
-        name: 'category',
-        message: 'How many would you like to buy?',
-        type: 'list',
-        choices: ["Electronics", "Clothing", "Beauty", "Shoes", "Other"]
+      name: 'id',
+      message: 'What product would you like to buy?',
+      type: 'input',
+      default: "01"
+    },
+    //message should ask how many units of the product they would like to buy.
+    {
+      name: 'units',
+      message: 'How many would you like to buy?',
+      type: 'input',
+      default: 1
+    }
+  ])
+  //If not enough in stock - show 'Insufficient Quanity' - DO I HAVE TO PUSH ALL OF THE PRODUCTS INTO AN ARRAY FIRST TO MAKE THIS WORK?
+  .then(function (response) {
+    connection.query("SELECT * FROM products", function (err, res) {
+      if (err) throw err;
+      var chosenItem;
+      for (var i = 0; i < res.length; i++) {
+        if (res[i].id === response.id) {
+          chosenItem = res[i];
+        }
       }
-    ])
+      //check stock of chosen item
+      if (chosenItem.stock_quantity > response.units) {
+        console.log("Sold");
+      } else {
+        console.log("Insufficient Quantity!")
+      }
+    });
+  });
 
-    //If not enough in stock - show 'Insufficient Quanity'
-    //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
+
+//If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
+
+//   connection.query("UPDATE auctions SET ? WHERE ?", [{
+//     highest_bid: parseInt(response.newBid)
+//   },
+//   {
+//     id: response.id
+//   }
+// ], function (err, res) {
+//   if (err) throw err;
+//   console.log(res.affectedRows);
+// })
