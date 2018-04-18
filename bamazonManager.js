@@ -14,6 +14,14 @@ var connection = mysql.createConnection({
   database: "products_db"
 });
 
+//Show Connection ID
+connection.connect(function (err) {
+  if (err) throw err;
+  console.log("connected as id " + connection.threadId);
+  askTask();
+});
+
+function askTask() {
 var tasks = ["View ProductS for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"];
 
 //Ask what do you want to do - list four options
@@ -44,7 +52,7 @@ inquirer
         break;
     }
   });
-
+};
 //Show full inventory
 function viewProducts() {
   console.log("These are the products currently for sale at Bamazon");
@@ -56,6 +64,7 @@ function viewProducts() {
       // Log all results of the SELECT statement
       console.log("ID: " + res[i].id + " || " + "Product: " + res[i].product_name + " || " + "Price: $" + res[i].price + " || " + "Stock Available: " + res[i].stock_quantity)
     };
+    askTask();
   });
 };
 
@@ -70,6 +79,7 @@ function lowInventory() {
       // Log all results of the SELECT statement
       console.log("ID: " + res[i].id + " || " + "Product: " + res[i].product_name + " || " + "Price: $" + res[i].price + " || " + "Stock Available: " + res[i].stock_quantity)
     };
+    askTask();
   });
 };
 
@@ -109,6 +119,7 @@ function newProduct() {
         },
         function (err, res) {}
       );
+      askTask();
     });
 };
 
@@ -157,6 +168,7 @@ function addInventory() {
       //   {}
             console.log(res.affectedRows);
           })
+          askTask();
         });
       });
   };
