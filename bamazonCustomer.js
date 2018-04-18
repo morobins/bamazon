@@ -35,14 +35,26 @@ function afterConnection() {
           name: 'id',
           message: 'What product would you like to buy (by ID number)?',
           type: 'input',
-          default: 1
+          default: 1,
+          validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          }
         },
         //message should ask how many units of the product they would like to buy.
         {
           name: 'units',
           message: 'How many would you like to buy?',
           type: 'input',
-          default: 1
+          default: 1,
+          validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          }
         }
       ])
       //If not enough in stock - show 'Insufficient Quanity' 
