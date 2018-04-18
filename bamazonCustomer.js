@@ -26,19 +26,22 @@ function afterConnection() {
   connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
-      console.log("ID: " + res[i].id + " || " + "Product: " + res[i].product_name + " || " + "Price: $" + res[i].price);
-      var items = [];
-    for (var i = 0; i < res.length; i++) {
-      items.push(res[i].id);
+      console.log("ID#: " + res[i].id + " || " + "Product: " + res[i].product_name + " || " + "Price : $" + res[i].price);
     }
-    //Bring in inquirer to ask initial questions for purchase
+    //inquirer prompts asking what product user wants to buy and how many
     inquirer
       .prompt([{
-          //The first should ask them the ID of the product they would like to buy.
+          //ask for ID of product they want to buy
           name: 'id',
-          message: 'What product would you like to buy (by ID number)?',
-          type: 'list',
-          choices: items
+          message: 'What is the ID# of the product you want to buy?',
+          type: 'input',
+          default: 1,
+          validate: function (value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          }
         },
         //message should ask how many units of the product they would like to buy.
         {
@@ -61,21 +64,21 @@ function afterConnection() {
         var query = "SELECT stock_quantity FROM products WHERE id ='" + response.id + "'";
         connection.query(query, function (err, res) {
           if (err) throw err;
-          console.log(res);
+          // console.log(res);
           if (res.length === 0) {
             console.log("Error");
           } else if (response.units <= itemPicked.stock_quantity) {
-            console.log("Sold! Thank you for your purchase!");
+            console.log("Thank you for your purchase!");
             //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
             connection.query('UPDATE products SET stock_quantity = ' + (itemPicked.stock_quantity - response.units) + ' WHERE id = ' + response.id, function (err, res) {
               if (err) throw err;
-              console.log("Stock updated!");
+              console.log("Stock has been updated.");
             })
           } else {
-            console.log("Insufficient Quantity!")
+            //If not enough in stock, console not enough message
+            console.log("Sorry! Not enough product in stock.")
           }
         });
       });
-    };
-  })
-};
+    });
+  };
