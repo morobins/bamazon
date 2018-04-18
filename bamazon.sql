@@ -9,11 +9,11 @@ CREATE TABLE products(
   product_name VARCHAR(100) NOT NULL,
   department_name VARCHAR(45) NOT NULL,
   price INT default 0,
-  stock_quanity INT default 0,
+  stock_quantity INT default 0,
   PRIMARY KEY (id)
 );
 
-INSERT INTO products (product_name, department_name, price, stock_quanity)
+INSERT INTO products (product_name, department_name, price, stock_quantity)
 VALUES
 ("Wicked", "Beauty", 8, 10),
 ("MAC Palette", "Beauty", 22, 9),

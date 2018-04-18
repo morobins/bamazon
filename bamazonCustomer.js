@@ -28,47 +28,46 @@ function afterConnection() {
     for (var i = 0; i < res.length; i++) {
       console.log("ID: " + res[i].id + " || " + "Product: " + res[i].product_name + " || " + "Price: $" + res[i].price);
     }
-    makePurchase();
+    //Bring in inquirer to ask initial questions for purchase
+    inquirer
+      .prompt([{
+          //The first should ask them the ID of the product they would like to buy.
+          name: 'id',
+          message: 'What product would you like to buy (by ID number)?',
+          type: 'input',
+          default: 1
+        },
+        //message should ask how many units of the product they would like to buy.
+        {
+          name: 'units',
+          message: 'How many would you like to buy?',
+          type: 'input',
+          default: 1
+        }
+      ])
+      //If not enough in stock - show 'Insufficient Quanity' 
+      //it doesn't like when I try with a ? PLEASE HELP
+      .then(function (response) {
+        var itemPicked = res[0];
+        var query = "SELECT stock_quantity FROM products WHERE id ='" + response.id + "'";
+        connection.query(query, function (err, res) {
+          if (err) throw err;
+          console.log(res);
+          if (res.length === 0) {
+            console.log("Error");
+          } else if (response.units <= itemPicked.stock_quantity) {
+            console.log("Sold! Thank you for your purchase!");
+          } else {
+            console.log("Insufficient Quantity!")
+          }
+        });
+      });
+
   });
 }
 
-//Why is inquirer coming up on connection?
-function makePurchase() {
-inquirer
-  .prompt([{
-      //The first should ask them the ID of the product they would like to buy.
-      name: 'id',
-      message: 'What product would you like to buy?',
-      type: 'input',
-      default: "01"
-    },
-    //message should ask how many units of the product they would like to buy.
-    {
-      name: 'units',
-      message: 'How many would you like to buy?',
-      type: 'input',
-      default: 1
-    }
-  ])
-  //If not enough in stock - show 'Insufficient Quanity' - DO I HAVE TO PUSH ALL OF THE PRODUCTS INTO AN ARRAY FIRST TO MAKE THIS WORK?
-  .then(function (response) {
-    connection.query("SELECT * FROM products", function (err, res) {
-      if (err) throw err;
-      var chosenItem;
-      for (var i = 0; i < res.length; i++) {
-        if (res[i].id === response.id) {
-          chosenItem = res[i];
-        }
-      }
-      //check stock of chosen item
-      if (chosenItem.stock_quantity > response.units) {
-        console.log("Sold");
-      } else {
-        console.log("Insufficient Quantity!")
-      }
-    });
-  });
-};
+
+
 
 //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
 
