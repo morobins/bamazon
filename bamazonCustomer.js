@@ -27,6 +27,9 @@ function afterConnection() {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
       console.log("ID: " + res[i].id + " || " + "Product: " + res[i].product_name + " || " + "Price: $" + res[i].price);
+      var items = [];
+    for (var i = 0; i < res.length; i++) {
+      items.push(res[i].id);
     }
     //Bring in inquirer to ask initial questions for purchase
     inquirer
@@ -34,14 +37,8 @@ function afterConnection() {
           //The first should ask them the ID of the product they would like to buy.
           name: 'id',
           message: 'What product would you like to buy (by ID number)?',
-          type: 'input',
-          default: 1,
-          validate: function (value) {
-            if (isNaN(value) === false) {
-              return true;
-            }
-            return false;
-          }
+          type: 'list',
+          choices: items
         },
         //message should ask how many units of the product they would like to buy.
         {
@@ -70,7 +67,7 @@ function afterConnection() {
           } else if (response.units <= itemPicked.stock_quantity) {
             console.log("Sold! Thank you for your purchase!");
             //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
-            connection.query('UPDATE products SET stock_quantity = ' + (itemPicked.stock_quantity - parseInt(response.units)) + ' WHERE id = ' + response.id, function (err, res) {
+            connection.query('UPDATE products SET stock_quantity = ' + (itemPicked.stock_quantity - response.units) + ' WHERE id = ' + response.id, function (err, res) {
               if (err) throw err;
               console.log("Stock updated!");
             })
@@ -79,5 +76,6 @@ function afterConnection() {
           }
         });
       });
-  });
-}
+    };
+  })
+};

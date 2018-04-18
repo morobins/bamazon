@@ -112,7 +112,7 @@ function newProduct() {
     });
 };
 
-//select an item and update the inventory - DOES IT HAVE TO BE MORE SPECIFICALLY AND CHECK TO MAKE SURE IT IS A HIGHER NUMBER OR CAN IT JUST ADJUST THE INVENTORY
+//select an item and add to the inventory - DOES IT HAVE TO BE MORE SPECIFICALLY AND CHECK TO MAKE SURE IT IS A HIGHER NUMBER OR CAN IT JUST ADJUST THE INVENTORY
 function addInventory() {
   console.log("Selecting all products...\n");
   connection.query("SELECT * FROM products", function (err, res) {
@@ -132,7 +132,7 @@ function addInventory() {
         },
         {
           name: 'newInventory',
-          message: 'How many units are available?',
+          message: 'How many units would you like to add?',
           type: 'input'
         }
       ])
@@ -140,7 +140,7 @@ function addInventory() {
       //DO I NEED RES[i]??
       .then(function (response) {
         var itemPicked = {};
-        console.log(response);
+        // console.log(response);
         for (var i = 0; i < res.length; i++) {
           if (res[i].product_name === response.name) {
             itemPicked = res[i];
@@ -148,19 +148,15 @@ function addInventory() {
         };
         // console.log(itemPicked);
         //update the inventory of that selected item
-        {
-          console.log("Product Inventory Updated!");
-          connection.query("UPDATE products SET ? WHERE ?", [{
-              stock_quantity: parseInt(response.newInventory)
-            },
-            {
-              product_name: response.name
-            }
-          ], function (err, res) {
-            if (err) throw err;
+        console.log("Product Inventory Updated!");
+        connection.query('UPDATE products SET stock_quantity = ' + (itemPicked.stock_quantity + parseInt(response.newInventory)) + ' WHERE id = ' + itemPicked.id, function (err, res) {
+          if (err) throw err;
+        
+      // } else {
+      //   console.log("Update not successful!")
+      //   {}
             console.log(res.affectedRows);
           })
-        }
+        });
       });
-  });
-};
+  };
