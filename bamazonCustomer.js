@@ -36,7 +36,7 @@ function afterConnection() {
           message: 'What product would you like to buy (by ID number)?',
           type: 'input',
           default: 1,
-          validate: function(value) {
+          validate: function (value) {
             if (isNaN(value) === false) {
               return true;
             }
@@ -49,7 +49,7 @@ function afterConnection() {
           message: 'How many would you like to buy?',
           type: 'input',
           default: 1,
-          validate: function(value) {
+          validate: function (value) {
             if (isNaN(value) === false) {
               return true;
             }
@@ -69,27 +69,15 @@ function afterConnection() {
             console.log("Error");
           } else if (response.units <= itemPicked.stock_quantity) {
             console.log("Sold! Thank you for your purchase!");
+            //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
+            connection.query('UPDATE products SET stock_quantity = ' + (itemPicked.stock_quantity - parseInt(response.units)) + ' WHERE id = ' + response.id, function (err, res) {
+              if (err) throw err;
+              console.log("Stock updated!");
+            })
           } else {
             console.log("Insufficient Quantity!")
           }
         });
       });
-
   });
 }
-
-
-
-
-//If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
-
-//   connection.query("UPDATE auctions SET ? WHERE ?", [{
-//     highest_bid: parseInt(response.newBid)
-//   },
-//   {
-//     id: response.id
-//   }
-// ], function (err, res) {
-//   if (err) throw err;
-//   console.log(res.affectedRows);
-// })
