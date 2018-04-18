@@ -60,25 +60,23 @@ function afterConnection() {
       //If not enough in stock - show 'Insufficient Quanity' 
       //it doesn't like when I try with a ? PLEASE HELP
       .then(function (response) {
-        var itemPicked = res[0];
-        var query = "SELECT stock_quantity FROM products WHERE id ='" + response.id + "'";
-        connection.query(query, function (err, res) {
-          if (err) throw err;
-          // console.log(res);
-          if (res.length === 0) {
-            console.log("Error");
-          } else if (response.units <= itemPicked.stock_quantity) {
-            console.log("Thank you for your purchase!");
-            //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
-            connection.query('UPDATE products SET stock_quantity = ' + (itemPicked.stock_quantity - response.units) + ' WHERE id = ' + response.id, function (err, res) {
-              if (err) throw err;
-              console.log("Stock has been updated.");
-            })
-          } else {
-            //If not enough in stock, console not enough message
-            console.log("Sorry! Not enough product in stock.")
+        var itemPicked = {};
+        for (var i = 0; i < res.length; i++) {
+          if (res[i].id == response.id) {
+            itemPicked = res[i];
           }
-        });
+        }
+        if (response.units <= itemPicked.stock_quantity) {
+          console.log("Thank you for your purchase!");
+          //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
+          connection.query('UPDATE products SET stock_quantity = ? WHERE id = ?', [(itemPicked.stock_quantity - response.units), response.id], function (err, res) {
+            if (err) throw err;
+            console.log("Stock has been updated.");
+          })
+        } else {
+          //If not enough in stock, console not enough message
+          console.log("Sorry! Not enough product in stock.")
+        }
       });
-    });
-  };
+  });
+};
