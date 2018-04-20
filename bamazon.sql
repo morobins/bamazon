@@ -10,6 +10,7 @@ CREATE TABLE products(
   department_name VARCHAR(45) NOT NULL,
   price INT default 0,
   stock_quantity INT default 0,
+  product_sales INT NULL,
   PRIMARY KEY (id)
 );
 
@@ -26,4 +27,18 @@ VALUES
 ("Snapple", "Food", 2, 50),
 ("Pasta", "Food", 4, 30);
 
+CREATE TABLE departments(
+  department_id INT NOT NULL AUTO_INCREMENT,
+  department_name VARCHAR(60),
+  over_head_costs,
+  PRIMARY KEY (department_id)
+);
 
+INSERT INTO departments (department_name, over_head_costs)
+VALUES
+("Beauty", 10000),
+("Electronics", 50000),
+("Toys", 15000),
+("Food", 75000),
+("Furniture", 30000),
+("Shoes", 25000);
