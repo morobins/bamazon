@@ -69,15 +69,18 @@ function afterConnection() {
         }
         if (response.units <= itemPicked.stock_quantity) {
           console.log("Thank you for your purchase! Your total is: $" + parseInt(itemPicked.price * response.units));
+
+          //put total cost into a variable so it can be used to update product_sales
+          var totalCost = parseInt(itemPicked.price * response.units);
+
           //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
           connection.query('UPDATE products SET stock_quantity = ? WHERE id = ?', [(itemPicked.stock_quantity - response.units), response.id], function (err, res) {
             if (err) throw err;
-           //update product sales
-           connection.query('UPDATE products SET product_sales = ? WHERE id = ?',  [(itemPicked.product_sales + parseInt(response.units)), response.id], function (err, res) {
+           // Modify your bamazonCustomer.js app so that when a customer purchases anything from the store, the price of the product multiplied by the quantity purchased is added to the product's product_sales column.
+           connection.query('UPDATE products SET product_sales = ? WHERE id = ?',  [(itemPicked.product_sales + totalCost), response.id], function (err, res) {
             if (err) throw err;
            console.log(res.affectedRows);
           });
-            // console.log("Stock has been updated.");
           })
         } else {
           //If not enough in stock, console not enough message
@@ -86,18 +89,5 @@ function afterConnection() {
       });
   });
 };
-
-// Modify the products table so that there's a product_sales column and modify the bamazonCustomer.js app so that this value is updated with each individual products total revenue from each sale.
-
-// Modify your bamazonCustomer.js app so that when a customer purchases anything from the store, the price of the product multiplied by the quantity purchased is added to the product's product_sales column.
-
-// Make sure your app still updates the inventory listed in the products column.
-// Create another Node app called bamazonSupervisor.js. Running this application will list a set of menu options:
-
-// View Product Sales by Department
-
-// Create New Department
-
-// When a supervisor selects View Product Sales by Department, the app should display a summarized table in their terminal/bash window. Use the table below as a guide.
 
  

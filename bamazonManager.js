@@ -57,7 +57,6 @@ inquirer
 function viewProducts() {
   console.log("These are the products currently for sale at Bamazon");
   console.log("==================================================\n");
-  //SELECT artist, COUNT(*) - adds a new coloumn named "Count", From table, GROUP BY (aggregate)
   connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
@@ -72,7 +71,6 @@ function viewProducts() {
 function lowInventory() {
   console.log("These are the products with less than 5 units available");
   console.log("=====================================================\n");
-  //SELECT artist, COUNT(*) - adds a new coloumn named "Count", From table, GROUP BY (aggregate)
   connection.query("SELECT * FROM products WHERE stock_quantity < 5", function (err, res) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
@@ -82,6 +80,48 @@ function lowInventory() {
     askTask();
   });
 };
+
+//select an item and add to the inventory
+function addInventory() {
+  console.log("Selecting all products...\n");
+  connection.query("SELECT * FROM products", function (err, res) {
+    if (err) throw err;
+    var items = [];
+    for (var i = 0; i < res.length; i++) {
+      items.push(res[i].product_name);
+    }
+    inquirer
+      .prompt([{
+          name: 'name',
+          message: 'What product would you like to update the inventory for?',
+          type: 'list',
+          choices: items
+        },
+        {
+          name: 'newInventory',
+          message: 'How many units would you like to add?',
+          type: 'input'
+        }
+      ])
+      //Match the product selected with the corresponding product in the database
+      .then(function (response) {
+        var itemPicked = {};
+        // console.log(response);
+        for (var i = 0; i < res.length; i++) {
+          if (res[i].product_name === response.name) {
+            itemPicked = res[i];
+          }
+        };
+        //update the inventory of that selected item
+        console.log("Product Inventory Updated!");
+        connection.query('UPDATE products SET stock_quantity = ' + (itemPicked.stock_quantity + parseInt(response.newInventory)) + ' WHERE id = ' + itemPicked.id, function (err, res) {
+          if (err) throw err;
+            console.log(res.affectedRows);
+          })
+          askTask();
+        });
+      });
+  };
 
 //update inventory of a specific item
 function newProduct() {
@@ -109,7 +149,7 @@ function newProduct() {
     ])
     //add the prduct to the database
     .then(function (product) {
-      console.log("Inserting a new product...\n");
+      console.log("New product added!\n");
       var query = connection.query(
         "INSERT INTO products SET ?", {
           product_name: product.name,
@@ -117,58 +157,11 @@ function newProduct() {
           price: product.price,
           stock_quantity: product.stock
         },
-        function (err, res) {}
+        function (err, res) {
+        }
       );
       askTask();
     });
 };
 
-//select an item and add to the inventory - DOES IT HAVE TO BE MORE SPECIFICALLY AND CHECK TO MAKE SURE IT IS A HIGHER NUMBER OR CAN IT JUST ADJUST THE INVENTORY
-function addInventory() {
-  console.log("Selecting all products...\n");
-  connection.query("SELECT * FROM products", function (err, res) {
-    if (err) throw err;
-    // Log all results of the SELECT statement
-    // console.log(res);
-    var items = [];
-    for (var i = 0; i < res.length; i++) {
-      items.push(res[i].product_name);
-    }
-    inquirer
-      .prompt([{
-          name: 'name',
-          message: 'What product would you like to update the inventory for?',
-          type: 'list',
-          choices: items
-        },
-        {
-          name: 'newInventory',
-          message: 'How many units would you like to add?',
-          type: 'input'
-        }
-      ])
-      //Match the product selected with the corresponding product in the database
-      //DO I NEED RES[i]??
-      .then(function (response) {
-        var itemPicked = {};
-        // console.log(response);
-        for (var i = 0; i < res.length; i++) {
-          if (res[i].product_name === response.name) {
-            itemPicked = res[i];
-          }
-        };
-        // console.log(itemPicked);
-        //update the inventory of that selected item
-        console.log("Product Inventory Updated!");
-        connection.query('UPDATE products SET stock_quantity = ' + (itemPicked.stock_quantity + parseInt(response.newInventory)) + ' WHERE id = ' + itemPicked.id, function (err, res) {
-          if (err) throw err;
-        
-      // } else {
-      //   console.log("Update not successful!")
-      //   {}
-            console.log(res.affectedRows);
-          })
-          askTask();
-        });
-      });
-  };
+

@@ -42,3 +42,8 @@ VALUES
 ("Food", 75000),
 ("Furniture", 30000),
 ("Shoes", 25000);
+
+SELECT {each column you want to come back}
+FROM {first table}
+INNER JOIN {second table}
+ON {firstTable.colum = secondTable.column AND firstTable.colum = secondTable.column}
