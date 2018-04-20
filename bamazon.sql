@@ -25,3 +25,5 @@ VALUES
 ("Nikes", "Shoes", 80, 25),
 ("Snapple", "Food", 2, 50),
 ("Pasta", "Food", 4, 30);
+
+

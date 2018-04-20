@@ -64,10 +64,11 @@ function afterConnection() {
         for (var i = 0; i < res.length; i++) {
           if (res[i].id == response.id) {
             itemPicked = res[i];
+            // console.log(itemPicked);
           }
         }
         if (response.units <= itemPicked.stock_quantity) {
-          console.log("Thank you for your purchase!");
+          console.log("Thank you for your purchase! Your total is: $" + parseInt(itemPicked.price * response.units));
           //If in stock - update the SQL database to reflect the remaining quantity. Once the update goes through, show the customer the total cost of their purchase.
           connection.query('UPDATE products SET stock_quantity = ? WHERE id = ?', [(itemPicked.stock_quantity - response.units), response.id], function (err, res) {
             if (err) throw err;
@@ -80,3 +81,5 @@ function afterConnection() {
       });
   });
 };
+
+ 
