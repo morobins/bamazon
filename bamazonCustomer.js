@@ -79,7 +79,7 @@ function afterConnection() {
            // Modify your bamazonCustomer.js app so that when a customer purchases anything from the store, the price of the product multiplied by the quantity purchased is added to the product's product_sales column.
            connection.query('UPDATE products SET product_sales = ? WHERE id = ?',  [(itemPicked.product_sales + totalCost), response.id], function (err, res) {
             if (err) throw err;
-           console.log(res.affectedRows);
+          //  console.log(res.affectedRows);
           });
           })
         } else {

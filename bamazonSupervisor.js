@@ -53,7 +53,8 @@ inquirer
 // department_id	department_name	over_head_costs	product_sales	total_profit
 
 // The total_profit column should be calculated on the fly using the difference between over_head_costs and product_sales. total_profit should not be stored in any database. You should use a custom alias.
-
+//SELECT (SUM(dept.overhead)-SUM(dept.sales)) AS total_profit from dept
+//inner join products
 
 // Create New Department
 function createDepartment() {
