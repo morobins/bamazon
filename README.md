@@ -12,6 +12,5 @@ Check out the gifs below to see it in action!
 
 **If a customer wants to purchase an item:**
 
-![Image of Customer Making Purchase]
-(https://gyazo.com/2b16d8860cc502cda13e4a51367b3ac9)
+[![https://gyazo.com/2b16d8860cc502cda13e4a51367b3ac9](https://i.gyazo.com/2b16d8860cc502cda13e4a51367b3ac9.gif)](https://gyazo.com/2b16d8860cc502cda13e4a51367b3ac9)
 
